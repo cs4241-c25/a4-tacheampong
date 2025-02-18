@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -44,7 +43,6 @@ export default function Modal() {
             console.log(res?.ok)
 
             if (res?.error) {
-                setError(res.error as string);
                 alert("Already in the system")
             }
             else {

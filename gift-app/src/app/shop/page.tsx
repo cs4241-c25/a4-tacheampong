@@ -4,7 +4,6 @@ import {useEffect, useState} from "react";
 import {purchase} from "../../../action/purchase";
 import {remove} from "../../../action/delete"
 import {edit} from "../../../action/edit";
-import {useRouter} from "next/navigation";
 import PurchaseList from "@/app/ui/purchaseList";
 
 export default function Page() {
