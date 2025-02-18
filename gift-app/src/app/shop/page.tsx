@@ -1,5 +1,5 @@
 'use client'
-import {useSession} from "next-auth/react";
+import {getSession, useSession} from "next-auth/react";
 import {useEffect, useState} from "react";
 import {purchase} from "../../../action/purchase";
 import {remove} from "../../../action/delete"
@@ -12,45 +12,38 @@ export default function Page() {
     const {data: session, status} = useSession()
 
     const [purchases, setPurchases] = useState(session?.user?.purchases);
+    const [selectedRecipient, setSelectedRecipient] = useState<string>("");
 
     const data = session?.user
     useEffect(() => {
-        // Only set purchases when session data is available
-        if (session?.user?.purchases) {
-            setPurchases(session?.user?.purchases);
+        // Fetch session data again if it's not available
+        if (!session) {
+            getSession().then((newSession) => {
+                if (newSession) {
+                    setPurchases(newSession.user.purchases || []);
+                }
+            });
+        } else {
+
+            setPurchases(session.user.purchases || []);
         }
-    }, [session])
+    }, [session]); // Re-fetch if the session changes
     useEffect(() => {
         setIsMounted(true)
     }, []);
 
 
-    function updateSelection(userData) {
-        const parsedData = userData
-        console.log("added")
-
-        const section = document.querySelector("select")
-
-        section.replaceChildren()
-        const option2 = document.createElement("option")
-        option2.textContent = "Select an Option"
-        option2.disabled = true
-        option2.defaultSelected = true
-
-        section.append(option2)
-
-        parsedData.map(choice => {
-            const option = document.createElement("option")
-            option.textContent = choice.recipient
-            option.id = choice.recipient
-            section.append(option)
-
-        })
-
-
-
+    interface Purchase {
+        recipient: string;
+        gift: string;
+        quantity: string;
+        cost: string;
+        total: string;
     }
-
+    const updateSelection = (userData: Purchase[]) => {
+        // Instead of removing and adding options manually, just update the state
+        setPurchases(userData);
+    };
     function clearInput() {
 
         const recipient = document.querySelector("#recipient") as HTMLInputElement
@@ -96,6 +89,11 @@ export default function Page() {
                     redirect: false,
                 });
                 console.log(res.purchases)
+                if ("user" in session) {
+                    session.user.purchases = res.purchases
+                }
+                console.log(session?.user.purchases)
+                console.log(session)
                 setPurchases(res.purchases)
                 updateSelection(res.purchases)
                 clearInput()
@@ -110,6 +108,9 @@ export default function Page() {
 
                 });
                 console.log(res.purchases)
+                if ("user" in session) {
+                    session.user.purchases = res.purchases
+                }
                 setPurchases(res.purchases)
                 updateSelection(res.purchases)
                 clearInput()
@@ -128,6 +129,9 @@ export default function Page() {
                     redirect: false,
                 });
                 console.log(res.purchases)
+                if ("user" in session) {
+                    session.user.purchases = res.purchases
+                }
                 setPurchases(res.purchases)
                 updateSelection(res.purchases)
                 clearInput()
@@ -139,24 +143,36 @@ export default function Page() {
         if (isMounted) {
 
 
-            let parsedData = (data)
+            let parsedData = (purchases)
+            console.log(purchases)
 
             const recipient1 = document.getElementById("recipient") as HTMLInputElement
             const gift1 = document.getElementById("gift") as HTMLInputElement
             const quantity1 = document.getElementById("quantity") as HTMLInputElement
             const cost1 = document.getElementById("cost") as HTMLInputElement
-            let purchaseIndex = parsedData?.purchases.findIndex(item => {
+            let purchaseIndex = parsedData?.findIndex(item => {
 
-                return item.recipient === selectVal;
+                    return item.recipient === selectVal;
+
+
+
             });
 
 
-            recipient1.value = parsedData?.purchases[purchaseIndex].recipient
-            recipient1.readOnly = true
+            if (parsedData) {
+                recipient1.value = parsedData[purchaseIndex].recipient
+            }
+            recipient1.readOnly = true;
             recipient1.style.backgroundColor = "grey";
-            gift1.value = parsedData?.purchases[purchaseIndex].gift
-            quantity1.value = parsedData?.purchases[purchaseIndex].quantity
-            cost1.value = parsedData?.purchases[purchaseIndex].cost
+            if (parsedData) {
+                gift1.value = parsedData[purchaseIndex].gift;
+            }
+            if (parsedData) {
+                quantity1.value = parsedData[purchaseIndex].quantity;
+            }
+            if (parsedData) {
+                cost1.value = parsedData[purchaseIndex].cost
+            }
 
         }
     }
@@ -185,23 +201,23 @@ export default function Page() {
 
                                 <form id="purchase-form" method="post">
                                     <label htmlFor="recipient-list"></label>
-                                    <select defaultValue={"text"} onChange={(event) => updateFields(event.target.value)}
-                                            name="recipient-list-1" id="recipient-list">
-                                        <option value="text" disabled>Select an Option</option>
-
-                                        {data?.purchases && data.purchases.length > 0 ? (
-                                            data.purchases.map((purchase: {
-                                                recipient,
-                                                gift,
-                                                quantity,
-                                                cost,
-                                                total
-                                            }, index) => (
-                                                <option key={index}>{purchase.recipient}</option>
-
+                                    <select
+                                        value={selectedRecipient}
+                                        onChange={(event) => {
+                                            setSelectedRecipient(event.target.value);
+                                            updateFields(event.target.value);
+                                        }}
+                                        name="recipient-list-1"
+                                        id="recipient-list">
+                                        <option value="" disabled>Select an Option</option>
+                                        {purchases?.length > 0 ? (
+                                            purchases?.map((purchase, index) => (
+                                                <option key={index} value={purchase.recipient}>
+                                                    {purchase.recipient}
+                                                </option>
                                             ))
                                         ) : (
-                                            <>somethings not working</>
+                                            <option disabled>No Purchases Available</option>
                                         )}
                                     </select>
                                     <div className="item">
