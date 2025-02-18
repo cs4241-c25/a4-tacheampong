@@ -67,17 +67,19 @@ export default function Modal() {
     return (
         <div>
             <dialog id="modal" open={true}>
-                <div>
+                <div className={"internal-modal"}>
                     <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
 
-                        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+                        <div className="flex sm:mx-auto sm:w-full sm:max-w-sm">
+{/*
                             <Image src={"/greenCircleIcon.png"} alt={"green circle"} width={15} height={15}></Image>
+*/}
                             {/* <img className="mx-auto h-10 w-auto" src="/greenCircleIcon.png" alt="green dot"/>*/}
                             <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-gray-900">Sign in
                                 to
                                 your account</h2>
 
-                            <Link href={"/"}>X</Link> {/*may have to change to match router nextjs provides*/}
+                            <Link className={"close"} href={"/"}>X</Link>
                         </div>
 
 
