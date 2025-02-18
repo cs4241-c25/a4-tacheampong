@@ -1,5 +1,5 @@
 "use client";
-import { signIn } from "next-auth/react";
+import {getSession, signIn} from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {register} from "../../../action/register";
@@ -31,6 +31,7 @@ export default function Modal() {
                 alert("Incorrect username or password")
             }
             if (res?.ok) {
+                const session = await getSession();
                 return router.push("/shop");
             }
         }
@@ -43,7 +44,7 @@ export default function Modal() {
             console.log(res?.ok)
 
             if (res?.error) {
-                alert("Already in the system")
+                return alert("Already in the system")
             }
             else {
                 const res  =  await signIn("credentials", {
@@ -53,6 +54,8 @@ export default function Modal() {
                 } ) as SignInResponse | undefined;
                 console.log(res)
                 alert("Welcome new User")
+                const session = await getSession();
+
                 return router.push("/shop");
             }
         }
