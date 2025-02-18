@@ -1,6 +1,6 @@
 'use client'
 import {useSession} from "next-auth/react";
-import {use, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {purchase} from "../../../action/purchase";
 import {remove} from "../../../action/delete"
 import {edit} from "../../../action/edit";
@@ -9,13 +9,11 @@ import PurchaseList from "@/app/ui/purchaseList";
 
 export default function Page() {
     const [isMounted, setIsMounted] = useState(false)
-    const [reloadKey, setReloadKey] = useState(0)
 
     const {data: session, status} = useSession()
 
     const [purchases, setPurchases] = useState(session?.user?.purchases);
 
-    const router = useRouter()
     const data = session?.user
     useEffect(() => {
         // Only set purchases when session data is available
@@ -144,7 +142,6 @@ export default function Page() {
 
             let parsedData = (data)
 
-            console.log(parsedData)
             const recipient1 = document.getElementById("recipient") as HTMLInputElement
             const gift1 = document.getElementById("gift") as HTMLInputElement
             const quantity1 = document.getElementById("quantity") as HTMLInputElement

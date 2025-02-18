@@ -1,6 +1,5 @@
 "use client";
-import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -11,7 +10,6 @@ interface SignInResponse {
     ok? : boolean;
 }
 export default function Modal() {
-    const [error, setError] = useState<string>("");
     const router = useRouter();
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -31,7 +29,6 @@ export default function Modal() {
             } ) as SignInResponse | undefined;
             console.log(res)
             if (res?.error) {
-                setError(res.error as string);
                 alert("Incorrect username or password")
             }
             if (res?.ok) {

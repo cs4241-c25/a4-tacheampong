@@ -2,7 +2,6 @@
 import React from 'react'
 import Modal from "@/app/ui/modal";
 import HomeScreen from "@/app/ui/homeScreen";
-import {white} from "next/dist/lib/picocolors";
 
 export default function  Page ()   {
 

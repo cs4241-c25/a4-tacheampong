@@ -3,7 +3,6 @@
 
 import {useSession} from "next-auth/react";
 import {useEffect, useState} from "react";
-import {useRouter} from "next/navigation";
 
 export default function PurchaseList({username, purchases}){
     const { data: session } = useSession();
