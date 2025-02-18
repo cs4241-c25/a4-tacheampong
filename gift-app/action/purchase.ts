@@ -1,6 +1,9 @@
 "use server"
 import bcrypt from "bcryptjs";
 import {MongoClient} from "mongodb";
+import {getServerSession} from "next-auth";
+import {authOptions} from "../lib/auth";
+import {getSession} from "next-auth/react";
 const MONGODB_URI = process.env.MONGODB_URI ;
 
 export const purchase = async (values: any) => {
@@ -41,6 +44,13 @@ export const purchase = async (values: any) => {
         );
         userFound = await connection.findOne({"username": username, "password": password})
         parsedPurchases = JSON.parse(JSON.stringify(userFound)).purchases
+
+        const session = await getSession();
+        if (session) {
+            console.log(session)
+            // Update session with new purchase data (you may need a custom session handler)
+            session.user.purchases = parsedPurchases;
+        }
         return {
             username: username,
             password: password,
