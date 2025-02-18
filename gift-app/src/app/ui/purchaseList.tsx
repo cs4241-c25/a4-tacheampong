@@ -2,14 +2,22 @@
 
 
 import {useSession} from "next-auth/react";
+import {useEffect, useState} from "react";
+import {useRouter} from "next/navigation";
 
 export default function PurchaseList({username, purchases}){
     const { data: session } = useSession();
+    const [isMounted, setIsMounted] = useState(false)
 
-    if (!session?.user?.purchases) {
-        // If the session data is not loaded yet or the user doesn't have purchases
-        return <div>Loading...</div>;
-    }
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, []);
+
+
+    if(isMounted && session?.user.purchases !== undefined){
+
+
     console.log(purchases)
     return (
 
@@ -17,7 +25,7 @@ export default function PurchaseList({username, purchases}){
     {purchases.length > 0 ?(
 
         purchases.map((purchase: {recipient, gift, quantity, cost, total}, index) => (
-            <tr key={index}>
+            <tr className={"odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800 border-b dark:border-gray-700 border-gray-200"} key={index}>
                 <td>{username}</td>
                 <td>{purchase.recipient}</td>
                 <td>{purchase.gift}</td>
@@ -35,4 +43,5 @@ export default function PurchaseList({username, purchases}){
     )}
     </tbody>
 )
+}
 }
